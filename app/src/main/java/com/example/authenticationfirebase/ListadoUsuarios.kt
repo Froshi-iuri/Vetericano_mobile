@@ -13,6 +13,6 @@ class ListadoUsuarios : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        //listado usuarios jubelit y smith
     }
 }
