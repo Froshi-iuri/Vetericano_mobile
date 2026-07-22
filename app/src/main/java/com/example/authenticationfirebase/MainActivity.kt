@@ -53,16 +53,28 @@ class MainActivity : AppCompatActivity() {
             correo = correo,
             password = password
         )
-        database.child("Usuarios").child(cedula)
-            .setValue(usuario)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Usuario guardado correctamente", Toast.LENGTH_SHORT).show()
-                limpiarCampos()
-                intent = Intent(this, Login::class.java)
-                startActivity(intent)
+        //esto de abajo valida si la cedula existe.
+        //entramos a
+        database.child("Usuarios").child(cedula).get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                // La cédula ya está registrada en la base de datos
+                Toast.makeText(this, "Esta cédula ya se encuentra registrada", Toast.LENGTH_SHORT).show()
+            } else {
+                // La cédula es nueva, procedemos a guardar el usuario
+                database.child("Usuarios").child(cedula).setValue(usuario)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Usuario guardado correctamente", Toast.LENGTH_SHORT).show()
+                        limpiarCampos()
+                        val intent = Intent(this, Login::class.java)
+                        startActivity(intent)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
+                    }
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
+        }
+            .addOnFailureListener { excepcion ->
+                Toast.makeText(this, "Error de conexión con la base de datos: ${excepcion.message}", Toast.LENGTH_LONG).show()
             }
     }
     private fun limpiarCampos(){
